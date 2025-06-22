@@ -70,7 +70,11 @@ class Node {
         this.children = [];
         this.wins = 0;
         this.visits = 0;
-        this.untriedMoves = this.getLegalMoves();
+        // A node is terminal if the move that led to it was a winning move.
+        // checkWin() checks for the player who just moved.
+        this.isTerminalWin = this.board.checkWin();
+        this.isTerminalDraw = this.board.isDraw();
+        this.untriedMoves = this.isTerminalWin || this.isTerminalDraw ? [] : this.getLegalMoves();
     }
 
     getLegalMoves() {
@@ -148,13 +152,33 @@ async function mcts(board, iterations) {
 
     for (let i = 0; i < iterations; i++) {
         let node = root;
+
+        // 1. Selection - find a leaf node
         while (node.untriedMoves.length === 0 && node.children.length > 0) {
             node = node.selectChild();
         }
-        if (node.untriedMoves.length > 0) {
-            node = node.expand();
+
+        // 2. Expansion - if the leaf is not terminal, expand it
+        if (!node.isTerminalWin && !node.isTerminalDraw) {
+            if (node.untriedMoves.length > 0) {
+                node = node.expand(); // node is now a new child node
+            }
         }
-        const winner = node.simulate();
+
+        // 3. Simulation - from the new node (or the terminal leaf)
+        let winner;
+        if (node.isTerminalWin) {
+            // The winner is the player who moved to reach this state.
+            // The board's currentPlayer has already been flipped.
+            winner = 3 - node.board.currentPlayer;
+        } else if (node.isTerminalDraw) {
+            winner = 0; // Draw
+        } else {
+            // If we are here, the node is not terminal, so we simulate.
+            winner = node.simulate();
+        }
+
+        // 4. Backpropagation
         node.backpropagate(winner);
     }
     return root;
