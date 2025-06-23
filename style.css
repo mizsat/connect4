@@ -4,48 +4,13 @@ body {
     text-align: center;
 }
 
-#column-selectors {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto 10px auto;
-    width: 400px; /* Same as game-board for alignment */
-    gap: 5px;
-    padding: 0 10px; /* Align with game-board padding */
-}
-
-.column-selector {
-    width: 50px; /* Same as cell width */
-    height: 60px; /* Increased height for win rate */
-    cursor: pointer;
-    display: flex;
-    flex-direction: column; /* Stack number and win rate vertically */
-    justify-content: center;
-    align-items: center;
-    background: #888; /* Gray selector */
-    color: #fff;
-    font-size: 1.5em;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.column-selector:hover {
-    background-color: #666; /* Darker gray on hover */
-}
-
-.win-rate {
-    font-size: 0.5em;
-    font-weight: normal;
-    margin-top: 2px;
-    height: 1em; /* Reserve space */
-}
-
 #game-board {
     display: grid;
     grid-template-rows: repeat(6, 50px);
     grid-template-columns: repeat(7, 50px);
     gap: 5px;
     justify-content: center;
-    margin: 0 auto 30px auto;
+    margin: 20px auto 30px auto;
     background: #aaa; /* Gray board */
     padding: 10px;
     border-radius: 0;
@@ -65,40 +30,54 @@ body {
     transition: background 0.2s;
 }
 
+.cell.playable {
+    background-color: #bebebe; /* A distinct gray */
+    cursor: pointer;
+}
+
+.cell.playable:hover {
+    background-color: #adadad; /* A darker gray on hover */
+}
+
+.win-rate-overlay {
+    font-size: 14px;
+    font-weight: bold;
+    /* color: #111; Color is now set based on turn */
+    pointer-events: none; /* So it doesn't block clicks */
+}
+
+/* Set win rate text color based on the current turn */
+.turn-player1 .win-rate-overlay {
+    color: #111; /* Black text for black's turn */
+}
+
+.turn-player2 .win-rate-overlay {
+    color: #fff; /* White text for white's turn */
+}
+
 .cell.player1 {
     background: #000; /* Black piece */
+    cursor: default;
 }
 
 .cell.player2 {
     background: #fff; /* White piece */
+    cursor: default;
 }
 
+/* This is no longer needed as the message element was removed.
 #message {
     font-size: 1.2em;
     margin: 10px;
     min-height: 1.5em;
 }
-
-#reset-btn {
-    padding: 8px 24px;
-    font-size: 1em;
-    border: none;
-    background: #888; /* Gray button */
-    color: #fff;
-    border-radius: 0;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-#reset-btn:hover {
-    background: #666; /* Darker gray on hover */
-}
+*/
 
 .controls {
     margin-top: 20px;
 }
 
-.controls button {
+button {
     padding: 8px 24px;
     font-size: 1em;
     border: none;
@@ -107,14 +86,13 @@ body {
     border-radius: 0;
     cursor: pointer;
     margin: 0 5px;
-    transition: background-color 0.2s;
 }
 
-.controls button:hover {
+button:hover:not(:disabled) {
     background: #666; /* Darker gray on hover */
 }
 
-.controls button:disabled {
-    background: #ccc;
+button:disabled {
+    background: #b0b0b0;
     cursor: not-allowed;
 }
