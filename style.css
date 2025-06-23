@@ -96,3 +96,20 @@ button:disabled {
     background: #b0b0b0;
     cursor: not-allowed;
 }
+
+/* MCTS button specific styles */
+#mcts-toggle-btn {
+    background-color: #aaa; /* Lighter gray for OFF state */
+}
+
+#mcts-toggle-btn.active {
+    background-color: #666; /* Darker gray for ON state */
+}
+
+#mcts-toggle-btn:hover {
+    background-color: #999;
+}
+
+#mcts-toggle-btn.active:hover {
+    background-color: #555;
+}

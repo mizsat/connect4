@@ -184,12 +184,14 @@ async function mcts(rootNode, iterations) {
 let history = [new Board()];
 let redoStack = [];
 let gameOver = false;
+let mctsEnabled = false; // MCTS is off by default
 
 // --- UI Elements ---
 const boardDiv = document.getElementById('game-board');
 const undoBtn = document.getElementById('undo-btn');
 const redoBtn = document.getElementById('redo-btn');
 const resetBtn = document.getElementById('reset-btn');
+const mctsToggleBtn = document.getElementById('mcts-toggle-btn');
 
 // --- Game Logic ---
 async function updateUI() {
@@ -205,6 +207,8 @@ function initGame() {
     history = [new Board()];
     redoStack = [];
     gameOver = false;
+    mctsEnabled = false; // Reset MCTS state
+    updateMCTSButton();
     updateUI();
 }
 
@@ -294,6 +298,12 @@ function displayWinRates(rootNode) {
 }
 
 async function updateWinRates() {
+    // If MCTS is disabled, clear any existing win rates and stop.
+    if (!mctsEnabled) {
+        document.querySelectorAll('.win-rate-overlay').forEach(overlay => overlay.textContent = '');
+        return;
+    }
+
     const currentBoard = history[history.length - 1];
     const legalMoves = new Node(currentBoard).getLegalMoves();
 
@@ -320,8 +330,8 @@ async function updateWinRates() {
     const rootNode = new Node(new Board(currentBoard));
 
     for (let i = 0; i < TOTAL_SIMULATIONS / BATCH_SIZE; i++) {
-        // If the game state has changed (e.g., user made a move while we are thinking), stop calculating.
-        if (currentBoard !== history[history.length - 1]) {
+        // If the game state has changed OR MCTS is disabled, stop calculating.
+        if (currentBoard !== history[history.length - 1] || !mctsEnabled) {
             return;
         }
         
@@ -366,10 +376,21 @@ function redo() {
     }
 }
 
+function toggleMCTS() {
+    mctsEnabled = !mctsEnabled;
+    updateMCTSButton();
+    updateWinRates(); // Re-run calculations or clear the board
+}
+
+function updateMCTSButton() {
+    mctsToggleBtn.classList.toggle('active', mctsEnabled);
+}
+
 // --- Event Listeners ---
 undoBtn.addEventListener('click', undo);
 redoBtn.addEventListener('click', redo);
 resetBtn.addEventListener('click', initGame);
+mctsToggleBtn.addEventListener('click', toggleMCTS);
 
 // --- Initialisation ---
 initGame();
